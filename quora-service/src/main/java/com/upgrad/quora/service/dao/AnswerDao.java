@@ -14,6 +14,16 @@ public class AnswerDao {
     @PersistenceContext
     private EntityManager entityManager;
 
+    /**
+     * Saves the answer for the question
+     *
+     * @param answerEntity answer for the question
+     * @return answer for the question
+     */
+    public Answer createAnswer(Answer answerEntity) {
+        entityManager.persist(answerEntity);
+        return answerEntity;
+    }
 
     /**
      * This method is to get a answer by uuid from db

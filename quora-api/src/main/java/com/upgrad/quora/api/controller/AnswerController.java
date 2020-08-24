@@ -47,4 +47,30 @@ public class AnswerController {
         }
         return new ResponseEntity<List<AnswerDetailsResponse>>(answerDetailsResponseList, HttpStatus.OK);
     }
+    /**
+     * This method is used for the corresponding question which
+     * is to be answered in the database
+     *
+     * @param questionId    To get respective question using unique key call questionId
+     * @param authorization holds the Bearer access token for authenticating the user.
+     * @return the response for the answer which is created along with httpStatus
+     * @throws AuthorizationFailedException If the access token provided by the user does not exist
+     *                                      in the database, If the user has signed out
+     * @throws InvalidQuestionException     If the question uuid entered by the user whose answer
+     *                                      is to be posted does not exist in the database
+     */
+    @RequestMapping(method = RequestMethod.POST, path = "/question/{questionId}/answer/create")
+    public ResponseEntity<AnswerResponse> createAnswer(final AnswerRequest answerRequest,
+                                                       @PathVariable("questionId") final String questionId,
+                                                       @RequestHeader("authorization") final String authorization)
+            throws AuthorizationFailedException, InvalidQuestionException {
+
+        final Answer answer = new Answer();
+        answer.setAns(answerRequest.getAnswer());
+        answer.setDate(ZonedDateTime.now());
+        answer.setUuid(UUID.randomUUID().toString());
+        final Answer updatedAnswer = answerBusinessService.createAnswer(answer, questionId, authorization);
+        AnswerResponse answerResponse = new AnswerResponse().id(updatedAnswer.getUuid()).status("ANSWER CREATED");
+        return new ResponseEntity<AnswerResponse>(answerResponse, HttpStatus.CREATED);
+    }
 }
